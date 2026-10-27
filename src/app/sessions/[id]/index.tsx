@@ -20,7 +20,7 @@ export default function SessionScreen() {
   </>}>
     <FlatList data={items} keyExtractor={item => item.id} contentContainerStyle={{ padding: 24, flexGrow: 1 }}
       ListHeaderComponent={<View style={{ gap: 10, marginBottom: 20 }}><Heading>{session.name}</Heading><Copy subtle>{active ? 'In progress' : 'Finished'} · {items.length} {items.length === 1 ? 'item' : 'items'}</Copy><ErrorText message={action.error} /></View>}
-      ListEmptyComponent={<Empty title="What’s in your basket?" detail="Scan a barcode or add an item manually. You’ll enter the name and price from the shelf." />}
+      ListEmptyComponent={<Empty title="What’s in your basket?" detail="Scan to find the product name and set quantity to 1. Enter the shelf price, then save." />}
       renderItem={({ item }) => <View style={{ paddingVertical: 18, borderBottomWidth: 1, borderColor: c.line, gap: 12 }}>
         <Text style={[styles.title, { color: c.text }]}>{item.productName}</Text>
         <View style={styles.row}><Text style={{ color: c.muted, fontSize: 16, flex: 1 }}>{money(item.price)} × {item.quantity}</Text><Text style={[styles.amount, { color: c.text }]}>{money(total([item]))}</Text></View>

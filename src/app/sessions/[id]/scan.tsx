@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, AppState, Linking, View } from 'react-native';
+import { AppState, Linking, View } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router, useLocalSearchParams, useIsFocused } from 'expo-router';
 import { validBarcode } from '../../../domain';
@@ -30,16 +30,15 @@ export default function Scan() {
       try {
         const duplicate = repo.duplicate(id, code);
         if (!duplicate) { router.replace({ pathname: '/sessions/[id]/item', params: { id, barcode: code.trim(), required: '1' } }); return; }
-        Alert.alert('Already in your basket', `${duplicate.productName} is already here. Quantity: ${duplicate.quantity}.`, [
-          { text: 'Cancel', style: 'cancel', onPress: unlock },
-          { text: 'Edit item', onPress: () => router.replace({ pathname: '/sessions/[id]/item', params: { id, itemId: duplicate.id } }) },
-          { text: 'Increase quantity', onPress: () => void action.run(() => { try { repo.increment(id, duplicate.id); changed(); router.back(); } finally { unlock(); } }) },
-        ], { cancelable: false });
+        repo.increment(id, duplicate.id);
+        changed();
+        router.back();
       } catch (reason) { unlock(); throw reason; }
     });
   }
   return <Page>
-    <Copy>Point your camera at the barcode. You’ll enter the product name and shelf price next.</Copy>
+    <Copy>Scan to fill in the product name and quantity. Scanning an item already in your basket adds one more.</Copy>
+    <Copy subtle>New barcodes are sent to Open Food Facts to find the name. You only enter the shelf price.</Copy>
     {permission?.granted && !cameraError ? <View style={{ height: 260, borderRadius: 16, overflow: 'hidden', backgroundColor: c.soft }}>
       {focused && foreground && !locked ? <CameraView style={{ flex: 1 }} facing="back" barcodeScannerSettings={{ barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'] }} onBarcodeScanned={({ data }) => accept(data)} onMountError={() => setCameraError('The camera could not start. Enter the barcode below instead.')} /> : null}
     </View> : <View style={{ paddingVertical: 16, gap: 12 }}>

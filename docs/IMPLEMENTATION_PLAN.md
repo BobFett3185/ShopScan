@@ -110,7 +110,7 @@ Expo's [development instructions](https://docs.expo.dev/get-started/start-develo
 
 - Automated/build checks and device checks are tracked separately in docs/VERIFICATION.md. Physical-device acceptance remains necessary.
 - USD is the proposed single currency. Minimum OS versions depend on the SDK selected at implementation.
-- Barcode names/prices require manual entry; no product lookup or price accuracy guarantee.
+- User correction implemented: names populate through Open Food Facts (`src/productLookup.ts`); repeat scans increment quantity. Prices remain manual. Internet/coverage failures fall back to manual names. No price accuracy guarantee.
 - Device-local storage provides no cross-device sync or restoration feature.
 - Spreadsheet apps control CSV type inference and share destinations. Barcode leading zeros require text-column import when the receiving app guesses numbers.
 - Taxes and fractional quantities are outside the estimated-total calculation.

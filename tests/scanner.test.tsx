@@ -1,5 +1,4 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { Alert } from 'react-native';
 import Scan from '../src/app/sessions/[id]/scan';
 
 const mockReplace = jest.fn(); const mockBack = jest.fn(); const mockDuplicate = jest.fn(); const mockIncrement = jest.fn(); const mockChanged = jest.fn();
@@ -24,15 +23,12 @@ test('invalid typed barcode leaves the scanner open with a useful error', () => 
   expect(screen.getByText('Enter an 8, 12, or 13-digit UPC/EAN barcode.')).toBeTruthy();
   expect(mockReplace).not.toHaveBeenCalled();
 });
-test('duplicate scan is locked until a choice and can increase existing quantity', async () => {
+test('duplicate scan automatically increases quantity once and returns to basket', async () => {
   mockDuplicate.mockReturnValue({ id: 'milk', productName: 'Milk', quantity: 1 });
-  const alert = jest.spyOn(Alert, 'alert');
   render(<Scan />); fireEvent.changeText(screen.getByLabelText('Enter barcode manually'), '0123456789012');
   await act(async () => { fireEvent.press(screen.getByRole('button', { name: 'Use barcode' })); });
   fireEvent.press(screen.getByRole('button', { name: 'Use barcode' }));
-  expect(alert).toHaveBeenCalledTimes(1);
-  const increase = alert.mock.calls[0][2]?.find(button => button.text === 'Increase quantity');
-  await act(async () => { increase?.onPress?.(); });
+  expect(mockIncrement).toHaveBeenCalledTimes(1);
   expect(mockIncrement).toHaveBeenCalledWith('trip', 'milk');
   expect(mockBack).toHaveBeenCalledTimes(1);
 });

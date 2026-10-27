@@ -6,11 +6,11 @@ Help a shopper record purchases during a grocery trip, see an estimated total, p
 
 The same Expo React Native TypeScript codebase must support Apple iPhone (iOS) and Android phones with equivalent core functionality. Camera permissions, scanning, persistence, and native file sharing must be verified separately on both platforms. The base implementation pins Expo SDK 57, whose framework support floor is iOS 16.4+ and Android 7+ (API 24+); see [verification](VERIFICATION.md) for compatibility sources and unverified device checks.
 
-Core shopping functions must work offline. Sending a shared file through another app may require that app's internet connection. No app login is required.
+Core manual shopping functions must work offline. Automatic name lookup uses Open Food Facts and requires internet; failed or unknown lookups leave the item form editable. Only the barcode is sent, not the shopping session. Sending a shared file through another app may also require internet. No app login is required.
 
 ## 2. MVP scope and explicit assumptions
 
-- Users supply product names and unit prices. Scanning supplies a barcode only.
+- Scanning or typed-barcode entry fills the product name from Open Food Facts when available and sets quantity to 1. Users supply the shelf price and may edit the name. Unknown/offline products require manual naming. Package weight from the product database is never used as purchased quantity.
 - Proposed first-release currency: USD, with two decimal places throughout. Currency conversion and multi-currency sessions are excluded. Confirm this default before implementation if another currency is needed.
 - Totals are estimated merchandise subtotals: no tax, coupons, deposits, discounts, or checkout/payment calculation.
 - Quantity is a positive whole number. Weighted goods can be entered manually as one item at their total price; fractional quantities are excluded.
@@ -58,8 +58,8 @@ Core shopping functions must work offline. Sending a shared file through another
 - Keep manual barcode entry accessible even when scanning works, for testing and damaged labels.
 - Pause scanning after the first accepted code to avoid repeated frames adding or opening multiple items. Resume only after the current flow is dismissed or completed.
 - Preserve barcode values as text, including leading zeros. Use one canonical comparison rule for scanning and typed entry: a 12-digit UPC-A and its zero-prefixed 13-digit EAN equivalent compare as the same product. Preserve the original value for display/export. Other codes match trimmed text exactly; do not invent UPC-E conversions.
-- For an existing barcode in this session, offer **Increase Quantity by 1**, **Edit Item**, and Cancel. Increasing quantity retains the existing name and unit price.
-- For a new code, open the item form with barcode filled and quantity 1. Do not create a row until the form is saved.
+- For an existing barcode in this session, immediately increase quantity by 1, retaining name and unit price, then return to the basket. A scan lock prevents repeated camera frames from incrementing again. Edit remains available on the item row.
+- For a new code, open the item form with barcode filled and quantity 1, then look up its name with a seven-second timeout. Show lookup status, missing/offline fallback, retry after connectivity failure, and Open Food Facts attribution. Never overwrite user-entered text with a late response. Do not create a row until the form is saved.
 - Recheck duplicates when saving, including manually entered or edited barcodes. Do not silently merge rows or allow two rows with the same nonempty canonical barcode. Route the user to the existing item; preserve the draft while they decide.
 - Manual barcode fallback is text entry with digit validation; accept common 8-, 12-, and 13-digit UPC/EAN lengths. Do not require checksum validation for MVP testing. This is distinct from Add Manually, which can omit the barcode entirely.
 

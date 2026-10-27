@@ -12,7 +12,7 @@ Record device model, OS, Expo SDK/build type, result, and any issue for each pla
 - [ ] Barcode matching preserves leading zeros, recognizes UPC-A/zero-prefixed EAN equivalence, permits multiple barcode-less manual items, and isolates sessions.
 - [ ] Repository creates/loads/updates/deletes records; transactions preserve consistency; parent timestamps change on child writes; failed writes do not partially commit; duplicate constraints hold.
 - [ ] Initial schema migration succeeds, reopening does not erase data, and migration failure never silently resets storage.
-- [ ] Interaction tests cover duplicate quantity/edit/cancel choices, form validation, discard confirmation, and save-error retention.
+- [ ] Interaction tests cover automatic repeat-scan quantity increments, product-name autofill/fallback, form validation, discard confirmation, and save-error retention.
 - [ ] CSV parser round-trip verifies exact seven headers, row ordering, cents formatting, quotes, commas, CR/LF, accented names, emoji, empty/manual barcodes, and leading zeros in raw data.
 - [ ] CSV handles formula-like user names as text and contains no extra footer/total rows.
 - [ ] Share orchestration handles write errors, share errors/unavailability, cancellation, and repeat exports without session mutation.
@@ -29,9 +29,9 @@ Record device model, OS, Expo SDK/build type, result, and any issue for each pla
 | Camera permission granted | Scanner opens and reads representative UPC-A, UPC-E, EAN-8, EAN-13 labels |
 | Permission denied/permanently denied | Explanation, manual fallback, and Settings action where appropriate |
 | Camera unavailable / unreadable label | Manual barcode entry and Add Manually remain usable |
-| New barcode | Prefilled barcode form; no guessed product/price; cancel creates no item |
+| New barcode | Name fetched from Open Food Facts; barcode prefilled; quantity 1; shelf price blank; missing/offline lookup permits manual entry; cancel creates no item |
 | Hold barcode in camera | One accepted scan until flow completes, no repeated dialogs or writes |
-| Existing barcode | Explicit increase/edit/cancel choices; increment keeps name/price; cancel leaves data unchanged |
+| Existing barcode | Automatically increments once and returns to basket; keeps existing name/price; repeated frames do not increment again |
 | Manual barcode or edited barcode collision | Same duplicate rule; no hidden merge or extra duplicate row |
 | Same barcode in another session | Independent item and price |
 | Edit price/name/quantity | Saved row, line total, estimated total, and modified timestamp update correctly |

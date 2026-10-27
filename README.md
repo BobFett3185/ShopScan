@@ -2,13 +2,13 @@
 
 ShopScan is a local-first grocery shopping app for **Apple iPhone (iOS) and Android phones**, built with Expo React Native and TypeScript.
 
-Scan a food item's barcode, enter its name and unit price, track quantities and an estimated shopping total, and export a session as CSV through the native share sheet. Sessions remain available to resume and export again.
+Scan a food item's barcode to fill its product name from Open Food Facts and set quantity to 1. Enter the shelf price, save, and scan the same item again to add one to its quantity. Export a session as CSV through the native share sheet. Sessions remain available to resume and export again.
 
 ## Base implementation
 
-Includes saved shopping sessions, manual item entry/edit/delete, UPC/EAN scanning and typed barcode fallback, duplicate quantity handling, pause/resume/finish, integer-cent totals, SQLite persistence, and CSV sharing. Names and shelf prices are entered by the shopper. The interface follows the device's light/dark appearance.
+Includes saved shopping sessions, automatic product-name lookup, manual item entry/edit/delete, UPC/EAN scanning and typed barcode fallback, automatic duplicate quantity increments, pause/resume/finish, integer-cent totals, SQLite persistence, and CSV sharing. Shelf prices are entered by the shopper. Missing products or offline lookups fall back to editable manual names. The interface follows the device's light/dark appearance.
 
-Verified: 37 tests, TypeScript, lint, Expo Doctor (21/21), and Android/iOS bundle compilation. Physical camera/share-sheet checks remain pending. See [verification and known limitations](docs/VERIFICATION.md).
+Verified: 49 tests, TypeScript, lint, Expo Doctor (21/21 on the base dependency set), and Android/iOS bundle compilation. Physical camera/share-sheet checks remain pending. See [verification and known limitations](docs/VERIFICATION.md).
 
 ## Test on your phone
 
@@ -28,8 +28,8 @@ See [Expo's device instructions](https://docs.expo.dev/get-started/start-develop
 
 1. Start Shopping; enter a trip name.
 2. Add Manually: `Milk`, price `3.49`, quantity `2`. Confirm total **$6.98**.
-3. Scan an actual grocery barcode, or type `0123456789012`. Enter a name and price, then save.
-4. Scan/type the same code again. Choose Increase quantity; verify it stays one row.
+3. Scan a grocery barcode, or type `3017620422003` to test a known Nutella product. With internet access, the name should fill in and quantity should be 1. Enter the price, then save.
+4. Scan/type the same code again. Quantity automatically increases by 1; verify it stays one row.
 5. Edit and delete an item, checking the total each time. Try canceling deletion too.
 6. Pause / Save, close Expo Go completely, reopen the project, and resume the trip. Saved rows should remain.
 7. Finish / Review, mark finished, and then Continue Shopping to add more.
@@ -66,6 +66,8 @@ The export check compiles Android and iOS JavaScript bundles; it is not a signed
 
 ## Boundaries
 
-No accounts, backend, cloud sync, product database, automatic product names or prices, Google API integration, payments, recommendations, social features, or maps. Barcode scanning does not look up a store's price. Users enter prices themselves. All shopping data stays on the device until the user shares an export.
+No accounts, app backend, cloud sync, automatic prices, Google API integration, payments, recommendations, social features, or maps. New scanned/typed barcodes are sent directly to Open Food Facts for name lookup; session names, prices, quantities, and the rest of the basket are not sent. New-product lookup needs internet; manual shopping and saved sessions work offline. Product coverage is incomplete and names remain editable.
+
+Product data: [Open Food Facts](https://world.openfoodfacts.org), available under [ODbL](https://opendatacommons.org/licenses/odbl/1-0/). The app identifies itself with a custom User-Agent; add a real maintainer contact to that header before public distribution. Quantity means packages purchased, not package weight. No database migration or reinstall is required for this update—reload the app in Expo Go.
 
 Both mobile platforms are release requirements. A browser version, tablet-specific layout, and App Store/Play Store publication are outside this initial implementation. Real iPhone and Android hardware must be used to verify camera scanning.
