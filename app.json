@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "ShopScan",
+    "slug": "shopscan",
+    "version": "1.0.0",
+    "scheme": "shopscan",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.shopscan.mobile"
+    },
+    "android": {
+      "package": "com.shopscan.mobile",
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow ShopScan to scan grocery barcodes.",
+          "recordAudioAndroid": false
+        }
+      ],
+      "expo-sharing",
+      "expo-font",
+      "expo-asset"
+    ]
+  }
+}

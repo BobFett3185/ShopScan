@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+.expo-scaffold/
+dist/
+coverage/
+*.log
+.DS_Store
+android/
+ios/
+.env*.local
